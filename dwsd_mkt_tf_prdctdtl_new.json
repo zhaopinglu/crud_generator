@@ -1,0 +1,178 @@
+
+{
+	"comment1": "The data in source file for access_method 'sequence' must be a list.",
+	"comment2": "The data in source file for access_method 'random' must be a dict.",
+	"name": "dwsd_mkt_tf_prdctdtl_new",
+	"parallel": 4,
+	"max_queue_size": 800,
+	"comment3": "a batched insert only count as 1 in queue",
+	"select_per_second": 0,
+	"update_per_second": 0,
+	"insert_per_second": 4000,
+	"delete_per_second": 0,
+	"insert_batch": 1000,
+	"comment": "Be careful to set high value for delete_per_second",
+
+	"db_conn_info": {
+		"host": "192.168.62.176",
+		"port": "9030",
+		"user": "test",
+		"password": "test",
+		"database": "test"
+	},
+	"db_type": "mysql",
+
+	"columns": {
+		"dt_wmcode": {
+			"type": "datetime",
+			"source": {
+				"format": "%Y-%m-%d %H:%M:%S",
+				"output_format": "%Y%m",
+				"begin": "2019-01-01 00:00:00",
+				"end": "2026-01-01 00:00:00",
+				"desc":"step=650ms: so we can generate same yyyymm value for 4M rows (86400*30/4000000)",
+				"step": "6s"
+			},
+			"access_method": "step"
+		},
+		"rev_company_code": {
+			"type": "number",
+			"source": {
+				"begin": 6800,
+				"end": 6900,
+				"step": 1
+			},
+			"access_method": "step",
+			"is_in_set_clause": "false"
+		},
+		"brand": {
+			"type": "string",
+			"source": "dwsd_mkt/brand.json",
+			"access_method": "sequence"
+		},
+		"o2o_type": {
+			"type": "string",
+			"source": "dwsd_mkt/o2o_type_weighted.json",
+			"access_method": "random"
+		},
+		"wm_type": {
+			"type": "string",
+			"source": "dwsd_mkt/wm_type.json",
+			"access_method": "random"
+		},
+		"province": {
+			"type": "string",
+			"source": "dwsd_mkt/province_weighted.json",
+			"access_method": "random"
+		},
+		"prdct_line": {
+			"type": "string",
+			"source": "dwsd_mkt/prdct_line_weighted.json",
+			"access_method": "random"
+		},
+		"markt_center": {
+			"type": "compute_column",
+			"source": "province"
+		},
+		"sub_company": {
+			"type": "compute_column",
+			"source": "province"
+		},
+		"channel_type": {
+			"type": "string",
+			"source": "dwsd_mkt/channel_type_weighted.json",
+			"access_method": "random"
+		},
+		"model_code": {
+			"type": "string",
+			"source": "dwsd_mkt/model_code_weighted.json",
+			"access_method": "random"
+		},
+		"city_code": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"city_name": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"city_level": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"hisense_city_level": {
+			"type": "compute_column",
+			"source": "province"
+		},
+		"sale_qty": {
+			"type": "number",
+			"source": {
+				"begin": 10000,
+				"end": 2000000,
+				"step": 1
+			},
+			"access_method": "random",
+			"is_in_set_clause": "false"
+		},
+		"sale_amt": {
+			"type": "number",
+			"source": {
+				"begin": 1000000,
+				"end": 9999999,
+				"precision":2
+			},
+			"access_method": "random",
+			"is_in_set_clause": "true"
+		},
+		"lycal_flag": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"Iccal_flag": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"nycal_flag": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"inccal_flag": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"load_dt": {
+			"type": "datetime",
+			"source": {
+				"format": "%Y-%m-%d %H:%M:%S",
+				"output_format": "%Y-%m-%d %H:%M:%S",
+				"begin": "2019-01-01 12:00:00",
+				"end": "2026-12-01 12:00:00",
+				"step": "650ms"
+			},
+			"access_method": "step"
+		},
+		"hisense_agency": {
+			"type": "string",
+			"source": "dwsd_mkt/province_weighted.json",
+			"access_method": "random"
+		},
+		"topw": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"is_top": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		}
+	}
+}
+

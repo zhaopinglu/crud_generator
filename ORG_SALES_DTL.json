@@ -1,0 +1,131 @@
+
+{
+	"name": "ORG_SALES_DTL",
+	"parallel": 5,
+	"max_queue_size": 40000,
+	"select_per_second": 0,
+	"update_per_second": 100,
+	"insert_per_second": 1000,
+	"delete_per_second": 20,
+	"comment": "Be careful to set high value for delete_per_second",
+
+	"db_conn_info": {
+		"host": "192.168.12.16",
+		"port": "3306",
+		"user": "test2",
+		"password": "MyNewPass4!",
+		"database": "sysbench"
+	},
+	"db_type": "mysql",
+
+	"columns": {
+		"id":
+		{
+			"type": "string",
+			"access_method": "uuid",
+			"is_in_where_clause": "true",
+			"where_condition": {
+				"access_method": "database",
+				"db_type": "mysql",
+				"db_conn_info": {
+					"host": "192.168.12.16",
+					"port": "3306",
+					"user": "test",
+					"password": "MyNewPass4!",
+					"database": "sysbench"
+				},
+				"query": "select id from (select id, @rn:=ifnull(@rn,0)+1, @last_id:=case when @rn % 200000 =0 then null when @rn%50 = 0 then id else @last_id end last_id, @max_year_id:=greatest(ifnull(@max_year_id, 0),year_id) from ORG_SALES_DTL t where year_id >= ifnull(@max_year_id-1,0) and id >ifnull(@last_id,'') order by id limit 50) t2 limit 20",
+				"comment": "cycling fetch id by step for expr: id=<id>. The last_id will be cycled back for every 200000, otherwise the where condition generation will slow down the sql generation."
+			}
+		},
+		"year_id": {
+			"type": "string",
+			"source": "ORG_SALES_DTL_dim/year.json",
+			"access_method": "sequence",
+			"repeat": 2400000
+		},
+		"period": {
+			"type": "string",
+			"source": "ORG_SALES_DTL_dim/period.json",
+			"access_method": "sequence",
+			"repeat": 200000,
+			"increase_info": {
+				"desc": "When current column value changed, increase others' values in percentage. For insert sql only.",
+				"increase_ratio": {"sale_amount": 0.005 , "sale_quantity": 0.004}
+			}
+		},
+		"org": {
+			"type": "string",
+			"source": "ORG_SALES_DTL_dim/org_weighted.json",
+			"access_method": "random"
+		},
+
+		"region": {
+			"type": "string",
+			"source": "ORG_SALES_DTL_dim/region_weighted.json",
+			"access_method": "random"
+		},
+		"product_line": {
+			"type": "string",
+			"source": "ORG_SALES_DTL_dim/product_line.json",
+			"access_method": "sequence"
+		},
+		"product": {
+			"type": "string",
+			"source": "ORG_SALES_DTL_dim/product_weighted.json",
+			"access_method": "random"
+		},
+		"vehicle_model": {
+			"type": "string",
+			"source": "ORG_SALES_DTL_dim/vehicle_model.json",
+			"access_method": "random"
+		},
+		"customer": {
+			"type": "string",
+			"source": "ORG_SALES_DTL_dim/customer_weighted.json",
+			"access_method": "random"
+		},
+		"currency": {
+			"type": "string",
+			"source": "ORG_SALES_DTL_dim/currency.json",
+			"access_method": "random"
+		},
+		"unit": {
+			"type": "string",
+			"source": "ORG_SALES_DTL_dim/unit.json",
+			"access_method": "random"
+		},
+		"sale_amount": {
+			"type": "number",
+			"source": {
+				"begin": 1000,
+				"end": 9999,
+				"precision":2
+			},
+			"access_method": "random",
+			"is_in_set_clause": "true"
+		},
+		"sale_quantity": {
+			"type": "number",
+			"source": {
+				"begin": 10,
+				"end": 5000,
+				"step": 1
+			},
+			"access_method": "step",
+			"is_in_set_clause": "true"
+		},
+		"create_date": {
+			"type": "datetime",
+			"source": {
+				"format": "%Y-%m-%d %H:%M:%S",
+				"begin": "2016-01-01 12:00:00",
+				"end": "2016-12-01 12:00:00",
+				"step": "1h"
+			},
+			"access_method": "step"
+		}
+
+	}
+}
+

@@ -1,0 +1,188 @@
+
+{
+	"comment1": "The data in source file for access_method 'sequence' must be a list.",
+	"comment2": "The data in source file for access_method 'random' must be a dict.",
+	"comment3": "-- wm_type, o2o_type, brand, prdct_line,  rev_company_code, sub_company, markt_center, province, channel_type, model_code",
+	"comment4": "--  1         2        10      15         10                1            1             32        3             17",
+	"comment5": "--  4896000   2448000  244800  16320      1632              1632         1632          51        17            1",
+	"name": "dwsd_mkt_tf_prdctdtl_new",
+	"parallel": 8,
+	"max_queue_size": 100,
+	"comment6": "a batched insert only count as 1 in queue",
+	"select_per_second": 0,
+	"update_per_second": 0,
+	"insert_per_second": 10000,
+	"delete_per_second": 0,
+	"insert_batch": 500,
+	"comment": "Be careful to set high value for delete_per_second",
+
+	"db_conn_info": {
+		"host": "192.168.62.176",
+		"port": "9030",
+		"user": "root",
+		"password": "",
+		"database": "test"
+	},
+	"db_type": "mysql",
+
+	"columns": {
+		"dt_wmcode": {
+			"type": "datetime",
+			"source": {
+				"format": "%Y-%m-%d %H:%M:%S",
+				"output_format": "%Y%m",
+				"begin": "2019-01-01 00:00:00",
+				"end": "2026-01-01 00:00:00",
+				"step": "1M"
+			},
+			"repeat": 4896000,
+			"access_method": "step"
+		},
+		"rev_company_code": {
+			"type": "number",
+			"source": {
+				"begin": 6801,
+				"end": 6810,
+				"step": 1
+			},
+			"repeat": 1632,
+			"access_method": "step",
+			"is_in_set_clause": "false"
+		},
+		"brand": {
+			"type": "string",
+			"source": "dwsd_mkt/brand.json",
+			"repeat": 244800,
+			"access_method": "sequence"
+		},
+		"o2o_type": {
+			"type": "string",
+			"source": "dwsd_mkt/o2o_type.json",
+			"repeat": 2448000,
+			"access_method": "sequence"
+		},
+		"wm_type": {
+			"type": "string",
+			"source": "dwsd_mkt/wm_type.json",
+			"repeat": 4896000,
+			"access_method": "sequence"
+		},
+		"province": {
+			"type": "string",
+			"source": "dwsd_mkt/province.json",
+			"repeat": 51,
+			"access_method": "sequence"
+		},
+		"prdct_line": {
+			"type": "string",
+			"source": "dwsd_mkt/prdct_line.json",
+			"repeat": 16320,
+			"access_method": "sequence"
+		},
+		"markt_center": {
+			"type": "compute_column",
+			"source": "province"
+		},
+		"sub_company": {
+			"type": "compute_column",
+			"source": "province"
+		},
+		"channel_type": {
+			"type": "string",
+			"source": "dwsd_mkt/channel_type.json",
+			"repeat": 17,
+			"access_method": "sequence"
+		},
+		"model_code": {
+			"type": "string",
+			"source": "dwsd_mkt/model_code.json",
+			"repeat": 1,
+			"access_method": "sequence"
+		},
+		"city_code": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"city_name": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"city_level": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"hisense_city_level": {
+			"type": "compute_column",
+			"source": "province"
+		},
+		"sale_qty": {
+			"type": "number",
+			"source": {
+				"begin": 10000,
+				"end": 2000000,
+				"step": 1
+			},
+			"access_method": "random",
+			"is_in_set_clause": "false"
+		},
+		"sale_amt": {
+			"type": "number",
+			"source": {
+				"begin": 1000000,
+				"end": 9999999,
+				"precision":2
+			},
+			"access_method": "random",
+			"is_in_set_clause": "true"
+		},
+		"lycal_flag": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"Iccal_flag": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"nycal_flag": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"inccal_flag": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"load_dt": {
+			"type": "datetime",
+			"source": {
+				"format": "%Y-%m-%d %H:%M:%S",
+				"output_format": "%Y-%m-%d %H:%M:%S",
+				"begin": "2019-01-01 12:00:00",
+				"end": "2026-12-01 12:00:00",
+				"step": "1s"
+			},
+			"access_method": "step"
+		},
+		"hisense_agency": {
+			"type": "compute_column",
+			"source": "province"
+		},
+		"topw": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		},
+		"is_top": {
+			"type": "string",
+			"source": "dwsd_mkt/const1.json",
+			"access_method": "sequence"
+		}
+	}
+}
+
